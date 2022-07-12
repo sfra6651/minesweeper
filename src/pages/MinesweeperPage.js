@@ -1,7 +1,11 @@
+import GridBlock from "../components/GridBlock";
+import MinesweeperBoard from "../components/MinesweeperBoard";
+
 function MinesweeperPage() {
   return (
-    <div>
-      <h1>Minesweeper</h1>
+    <div className="">
+      <h1 className="">Minesweeper</h1>
+      <MinesweeperBoard />
     </div>
   );
 }
