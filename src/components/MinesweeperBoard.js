@@ -1,45 +1,48 @@
 import { useState, useEffect } from "react";
 import GridBlock from "./GridBlock";
 
-function MinesweeperBoard() {
-  let items = Array.from(Array(100).keys()).map((item, index) => {
-    const column = index % 10;
-    const row = Math.floor(index / 10);
+const GRID_SIZE = 10;
+
+let items = Array.from(Array(GRID_SIZE ** 2).keys())
+  .map((item, index) => {
+    const column = index % GRID_SIZE;
+    const row = Math.floor(index / GRID_SIZE);
     return {
-      column,
       row,
+      column,
       clicked: false,
-      mine: false,
+      mine: Math.random() < 0.2,
       flag: false,
       neighbourMines: 0,
     };
+  })
+  .map((item, index, items) => {
+    let count = 0;
+    //loop thorugh rows
+    if (item.mine === false) {
+      let neighbours = items.filter((element) => {
+        //console.log(item, element);
+        return (
+          item.column - 1 <= element.column &&
+          item.column + 1 >= element.column &&
+          item.row - 1 <= element.row &&
+          item.row + 1 >= element.row &&
+          !(item.column === element.column && item.row === element.row) &&
+          element.mine
+        );
+      });
+      //console.log(neighbours);
+      return { ...item, neighbourMines: neighbours.length };
+    }
+    return item;
   });
 
+function MinesweeperBoard() {
   const [boardState, setBoardState] = useState({ items });
 
-  function populateMines() {
-    const newBoard = boardState.items.map((item, index) => {
-      let randNum = Math.random();
-      if (randNum < 0.2) {
-        return {
-          column: item.column,
-          row: item.row,
-          clicked: false,
-          mine: true,
-          flag: false,
-          neighbourMines: 0,
-        };
-      } else {
-        return item;
-      }
-    });
-    setBoardState({ items: newBoard });
-    console.log(newBoard);
-  }
-
   useEffect(() => {
-    populateMines();
-  }, []);
+    //console.log(boardState);
+  }, [boardState]);
 
   const handleClick = (event, index) => {
     const oldBoard = boardState.items;
@@ -48,17 +51,19 @@ function MinesweeperBoard() {
   };
 
   return (
-    <div className="grid grid-cols-10 gap-0 w-1/2 bg-slate-400 pt-2 pl-2">
+    <div
+      className={`grid grid-cols-${GRID_SIZE} gap-0 w-1/2 bg-slate-400 pt-2 pl-2`}
+    >
       {boardState.items.map((item, index) => (
         <button
           className={`static focus:outline-none 
-          ${item.clicked === false ? "bg-slate-300" : "bg-red-300"} 
+          ${item.clicked === false ? "bg-slate-300" : "bg-green-200"} 
           ${
             item.clicked === false || item.neighbourMines === 0
               ? "text-transparent"
               : "text-black"
           }
-          ${item.mine === false ? "bg-slate-300" : "bg-blue-300"}
+          ${item.mine === false ? "bg-slate-300" : "bg-red-300"}
           font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2`}
           key={index}
           item={item}
@@ -68,6 +73,7 @@ function MinesweeperBoard() {
           {item.neighbourMines}
         </button>
       ))}
+      {/* <div>{console.log(boardState)}</div> */}
     </div>
   );
 }
