@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import GridBlock from "./GridBlock";
 
 const GRID_SIZE = 10;
@@ -40,14 +40,53 @@ let items = Array.from(Array(GRID_SIZE ** 2).keys())
 function MinesweeperBoard() {
   const [boardState, setBoardState] = useState({ items });
 
-  useEffect(() => {
-    //console.log(boardState);
-  }, [boardState]);
+  const prevBoardStateRef = useRef();
+
+  function findNeighbours(items, item) {
+    if (item.mine === false) {
+      let neighbours = items.filter((element) => {
+        //console.log(item, element);
+        return (
+          item.column - 1 <= element.column &&
+          item.column + 1 >= element.column &&
+          item.row - 1 <= element.row &&
+          item.row + 1 >= element.row &&
+          !(item.column === element.column && item.row === element.row) &&
+          !element.mine
+        );
+      });
+
+      const newItems = items.map((thing) => {
+        const isFound = neighbours.some((element) => {
+          if (element.column === thing.column && element.row === thing.row) {
+            return true;
+          }
+        });
+        if (isFound) {
+          return { ...thing, clicked: true };
+        } else {
+          return thing;
+        }
+      });
+      return { newItems };
+    }
+    //neighbours.filter(function(neighbour){ return neighbour.column === thing.column && neighbour.row === thing.row})
+  }
+
+  useEffect(() => {}, [boardState]);
 
   const handleClick = (event, index) => {
     const oldBoard = boardState.items;
-    oldBoard[index] = { ...oldBoard[index], clicked: true };
-    setBoardState({ items: oldBoard });
+    if (oldBoard[index].clicked === false) {
+      oldBoard[index] = { ...oldBoard[index], clicked: true };
+      setBoardState({ items: oldBoard });
+
+      const afterClickedBoard = findNeighbours(
+        boardState.items,
+        oldBoard[index]
+      );
+      setBoardState({ items: afterClickedBoard.newItems });
+    }
   };
 
   return (
