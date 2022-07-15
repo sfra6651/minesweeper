@@ -18,10 +18,8 @@ let items = Array.from(Array(GRID_SIZE ** 2).keys())
   })
   .map((item, index, items) => {
     let count = 0;
-    //loop thorugh rows
     if (item.mine === false) {
       let neighbours = items.filter((element) => {
-        //console.log(item, element);
         return (
           item.column - 1 <= element.column &&
           item.column + 1 >= element.column &&
@@ -31,7 +29,6 @@ let items = Array.from(Array(GRID_SIZE ** 2).keys())
           element.mine
         );
       });
-      //console.log(neighbours);
       return { ...item, neighbourMines: neighbours.length };
     }
     return item;
@@ -42,10 +39,10 @@ function MinesweeperBoard() {
 
   const prevBoardStateRef = useRef();
 
+  //retunrs array with neighboring free tiles clicked
   function findNeighbours(items, item) {
     if (item.mine === false) {
       let neighbours = items.filter((element) => {
-        //console.log(item, element);
         return (
           item.column - 1 <= element.column &&
           item.column + 1 >= element.column &&
@@ -91,7 +88,7 @@ function MinesweeperBoard() {
 
   return (
     <div
-      className={`grid grid-cols-${GRID_SIZE} gap-0 w-1/2 bg-slate-400 pt-2 pl-2`}
+      className={`grid grid-cols-${GRID_SIZE} gap-0 w-1/2 bg-slate-400 pt-2 pl-2 justify-center`}
     >
       {boardState.items.map((item, index) => (
         <button
