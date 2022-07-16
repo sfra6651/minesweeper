@@ -1,4 +1,3 @@
-import GridBlock from "../components/GridBlock";
 import MinesweeperBoard from "../components/MinesweeperBoard";
 import GameOverPopUp from "../components/GameOverPopUp";
 
@@ -12,6 +11,7 @@ function MinesweeperPage() {
   const [flaging, setFlaging] = useState(false);
   const [hidden, setHidden] = useState(true);
   const [win, setWin] = useState(false);
+  const [notWon, setNotWon] = useState(false);
 
   function setGameOver() {
     setHidden(false);
@@ -20,6 +20,16 @@ function MinesweeperPage() {
   function setGameWon() {
     setWin(true);
     setHidden(false);
+  }
+
+  function notYet() {
+    setNotWon(true);
+    setHidden(false);
+  }
+
+  function continueWithGame() {
+    setNotWon(false);
+    setHidden(true);
   }
 
   function Flaging() {
@@ -55,6 +65,7 @@ function MinesweeperPage() {
         flaging={flaging}
         isGameOver={setGameOver}
         isWin={setGameWon}
+        notWonYet={notYet}
       />
 
       {setGameOver && (
@@ -62,6 +73,8 @@ function MinesweeperPage() {
           hidden={hidden}
           restart={reloadPage}
           isWin={win}
+          gameNotWonYet={notWon}
+          continue={continueWithGame}
         ></GameOverPopUp>
       )}
     </div>

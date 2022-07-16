@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import GridBlock from "./GridBlock";
 
 const GRID_SIZE = 10;
 
@@ -50,7 +49,8 @@ function MinesweeperBoard(props) {
           item.row + 1 >= element.row &&
           !(item.column === element.column && item.row === element.row) &&
           !element.mine &&
-          !element.clicked
+          !element.clicked &&
+          !element.flag
         );
       });
       // console.log(item);
@@ -97,6 +97,8 @@ function MinesweeperBoard(props) {
     if (isGameWon() === true) {
       console.log("game won");
       props.isWin();
+    } else {
+      props.notWonYet();
     }
   }
 
@@ -160,7 +162,7 @@ function MinesweeperBoard(props) {
           }
           ${item.flag === false ? "bg-slate-300" : "bg-red-300"}
           ${item.mine ? "bg-red-200" : "bg-slate-300"}
-          font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2`}
+          font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 text-center`}
             key={index}
             item={item}
             onClick={(event) => handleClick(event, index)}
