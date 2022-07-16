@@ -34,12 +34,12 @@ let items = Array.from(Array(GRID_SIZE ** 2).keys())
     return item;
   });
 
-function MinesweeperBoard() {
+function MinesweeperBoard(props) {
   const [boardState, setBoardState] = useState({ items });
 
   const prevBoardStateRef = useRef();
 
-  //retunrs array with neighboring free tiles clicked
+  //retunrs array with neighboring free tiles
   function findNeighbours(items, item) {
     if (item.mine === false) {
       let neighbours = items.filter((element) => {
@@ -49,40 +49,68 @@ function MinesweeperBoard() {
           item.row - 1 <= element.row &&
           item.row + 1 >= element.row &&
           !(item.column === element.column && item.row === element.row) &&
-          !element.mine
+          !element.mine &&
+          !element.clicked
         );
       });
+      // console.log(item);
+      //console.log(neighbours);
+      //console.log(updatedState(items, neighbours));
+      // const moreNeighbours = neighbours.map((element) => {
+      //   if (element.neighbourMines === 0 && element.clicked === false) {
+      //     return findNeighbours(updatedState(items, neighbours), element);
+      //   } else return null;
+      // });
+      return neighbours;
+    }
+  }
 
-      const newItems = items.map((thing) => {
-        const isFound = neighbours.some((element) => {
-          if (element.column === thing.column && element.row === thing.row) {
-            return true;
-          }
-        });
-        if (isFound) {
-          return { ...thing, clicked: true };
-        } else {
-          return thing;
+  function updatedState(items, neighbours) {
+    const newItems = items.map((thing) => {
+      //console.log(thing);
+      const isFound = neighbours.some((element) => {
+        if (element.column === thing.column && element.row === thing.row) {
+          return true;
         }
       });
-      return { newItems };
-    }
-    //neighbours.filter(function(neighbour){ return neighbour.column === thing.column && neighbour.row === thing.row})
+      if (isFound) {
+        return { ...thing, clicked: true };
+      } else {
+        return thing;
+      }
+    });
+    return { newItems };
   }
 
   useEffect(() => {}, [boardState]);
 
   const handleClick = (event, index) => {
-    const oldBoard = boardState.items;
-    if (oldBoard[index].clicked === false) {
-      oldBoard[index] = { ...oldBoard[index], clicked: true };
+    if (props.flaging) {
+      const oldBoard = boardState.items;
+      oldBoard[index] = { ...oldBoard[index], flag: true };
       setBoardState({ items: oldBoard });
+    } else {
+      if (boardState.items[index].mine) {
+        props.isGameOver();
+      } else {
+        const oldBoard = boardState.items;
+        if (oldBoard[index].clicked === false) {
+          oldBoard[index] = { ...oldBoard[index], clicked: true };
+          setBoardState({ items: oldBoard });
 
-      const afterClickedBoard = findNeighbours(
-        boardState.items,
-        oldBoard[index]
-      );
-      setBoardState({ items: afterClickedBoard.newItems });
+          const newNeighbours = findNeighbours(
+            boardState.items,
+            oldBoard[index]
+          );
+          //console.log(newNeighbours);
+
+          const afterClickedBoard = updatedState(
+            boardState.items,
+            newNeighbours
+          );
+          setBoardState({ items: afterClickedBoard.newItems });
+        }
+      }
     }
   };
 
@@ -99,7 +127,7 @@ function MinesweeperBoard() {
               ? "text-transparent"
               : "text-black"
           }
-          ${item.mine === false ? "bg-slate-300" : "bg-red-300"}
+          ${item.flag === false ? "bg-slate-300" : "bg-red-300"}
           font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2`}
           key={index}
           item={item}
@@ -109,7 +137,6 @@ function MinesweeperBoard() {
           {item.neighbourMines}
         </button>
       ))}
-      {/* <div>{console.log(boardState)}</div> */}
     </div>
   );
 }
