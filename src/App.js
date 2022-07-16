@@ -3,10 +3,8 @@ import GridBlock from "./components/GridBlock";
 
 function App() {
   return (
-    <div className="">
-      <div>
-        <MinesweeperPage />
-      </div>
+    <div style={{ height: "100vh" }}>
+      <MinesweeperPage />
     </div>
   );
 }

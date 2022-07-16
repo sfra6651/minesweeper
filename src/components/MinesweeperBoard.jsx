@@ -82,13 +82,38 @@ function MinesweeperBoard(props) {
     return { newItems };
   }
 
+  function isGameWon() {
+    const winBoard = boardState.items.filter((item) => {
+      return item.clicked || item.mine;
+    });
+    if (winBoard.length === boardState.items.length) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function gameWon() {
+    if (isGameWon() === true) {
+      console.log("game won");
+      props.isWin();
+    }
+  }
+
   useEffect(() => {}, [boardState]);
 
   const handleClick = (event, index) => {
     if (props.flaging) {
-      const oldBoard = boardState.items;
-      oldBoard[index] = { ...oldBoard[index], flag: true };
-      setBoardState({ items: oldBoard });
+      console.log();
+      if (boardState.items[index].flag === true) {
+        const oldBoard = boardState.items;
+        oldBoard[index] = { ...oldBoard[index], flag: false };
+        setBoardState({ items: oldBoard });
+      } else {
+        const oldBoard = boardState.items;
+        oldBoard[index] = { ...oldBoard[index], flag: true };
+        setBoardState({ items: oldBoard });
+      }
     } else {
       if (boardState.items[index].mine) {
         props.isGameOver();
@@ -102,7 +127,6 @@ function MinesweeperBoard(props) {
             boardState.items,
             oldBoard[index]
           );
-          //console.log(newNeighbours);
 
           const afterClickedBoard = updatedState(
             boardState.items,
@@ -115,12 +139,19 @@ function MinesweeperBoard(props) {
   };
 
   return (
-    <div
-      className={`grid grid-cols-${GRID_SIZE} gap-0 w-1/2 bg-slate-400 pt-2 pl-2 justify-center`}
-    >
-      {boardState.items.map((item, index) => (
-        <button
-          className={`static focus:outline-none 
+    <div>
+      <button
+        className="bg-slate-200 rounded-md w-1/2 h-12 hover:bg-white"
+        onClick={gameWon}
+      >
+        Check Win
+      </button>
+      <div
+        className={`grid grid-cols-${GRID_SIZE} gap-0 w-1/2 bg-slate-400 pt-2 pl-2 justify-center`}
+      >
+        {boardState.items.map((item, index) => (
+          <button
+            className={`static focus:outline-none 
           ${item.clicked === false ? "bg-slate-300" : "bg-green-200"} 
           ${
             item.clicked === false || item.neighbourMines === 0
@@ -128,15 +159,17 @@ function MinesweeperBoard(props) {
               : "text-black"
           }
           ${item.flag === false ? "bg-slate-300" : "bg-red-300"}
+          ${item.mine ? "bg-red-200" : "bg-slate-300"}
           font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2`}
-          key={index}
-          item={item}
-          onClick={(event) => handleClick(event, index)}
-        >
-          {" "}
-          {item.neighbourMines}
-        </button>
-      ))}
+            key={index}
+            item={item}
+            onClick={(event) => handleClick(event, index)}
+          >
+            {" "}
+            {item.neighbourMines}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

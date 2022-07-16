@@ -1,6 +1,6 @@
 import GridBlock from "../components/GridBlock";
 import MinesweeperBoard from "../components/MinesweeperBoard";
-import PopUp from "../components/PopUp";
+import GameOverPopUp from "../components/GameOverPopUp";
 
 import { useState } from "react";
 
@@ -11,8 +11,14 @@ function reloadPage() {
 function MinesweeperPage() {
   const [flaging, setFlaging] = useState(false);
   const [hidden, setHidden] = useState(true);
+  const [win, setWin] = useState(false);
 
   function setGameOver() {
+    setHidden(false);
+  }
+
+  function setGameWon() {
+    setWin(true);
     setHidden(false);
   }
 
@@ -45,9 +51,19 @@ function MinesweeperPage() {
           {flaging === false ? "Flaging disabled" : "Flaging enabled"}
         </button>
       </div>
-      <MinesweeperBoard flaging={flaging} isGameOver={setGameOver} />
+      <MinesweeperBoard
+        flaging={flaging}
+        isGameOver={setGameOver}
+        isWin={setGameWon}
+      />
 
-      {setGameOver && <PopUp hidden={hidden} restart={reloadPage}></PopUp>}
+      {setGameOver && (
+        <GameOverPopUp
+          hidden={hidden}
+          restart={reloadPage}
+          isWin={win}
+        ></GameOverPopUp>
+      )}
     </div>
   );
 }
